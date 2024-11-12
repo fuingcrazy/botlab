@@ -72,6 +72,7 @@ OccupancyGridSLAM::OccupancyGridSLAM(int numParticles,
     if(mode_ == mapping_only)
     {
         lcm_subscriptions_.push_back(lcm_.subscribe(SLAM_POSE_CHANNEL, &OccupancyGridSLAM::handlePose, this));
+        std::cout<<"Slam pose subscribed!"<<std::endl;
     }
 
     // Zero-out all the poses to start. Either the robot will start at (0,0,0) or at the first pose received from the
@@ -95,7 +96,7 @@ void OccupancyGridSLAM::runSLAM(void)
     iters_ = 0;
     while(true)
     {
-        // If new data has arrived
+        //If new data has arrived
         if(isReadyToUpdate())
         {
             // Then run an iteration of our SLAM algorithm
@@ -106,9 +107,8 @@ void OccupancyGridSLAM::runSLAM(void)
         else
         {
             usleep(1000);
-
-        }
-
+            //std::cout<<"Not running..."<<std::endl;
+         }
         std::lock_guard<std::mutex> autoLock(stopMutex_);
         if (!running_) break;
     }
@@ -223,7 +223,6 @@ bool OccupancyGridSLAM::isReadyToUpdate(void)
         bool haveNewOdom = (mode_ != mapping_only) && (odometryPoses_.containsPoseAtTime(nextScan.times.front()));
         // Otherwise, only see if a new pose has arrived
         bool haveNewPose = (mode_ == mapping_only) && (groundTruthPoses_.containsPoseAtTime(nextScan.times.front()));
-
         haveData = haveNewOdom || haveNewPose;
     }
 
@@ -297,7 +296,7 @@ void OccupancyGridSLAM::initializePosesIfNeeded(void)
         currentPose_.utime  = currentScan_.times.back();
         haveInitializedPoses_ = true;
 
-        if (randomInitialPos_)
+        if (randomInitialPos_)     //true if localization
             filter_.initializeFilterRandomly(map_);
         else
             filter_.initializeFilterAtPose(previousPose_);
@@ -320,7 +319,7 @@ void OccupancyGridSLAM::updateLocalization(void)
         }
 
         auto particles = filter_.particles();
-
+        //currentPose_  = filter_.updateFilterActionOnly(currentOdometry_);
         lcm_.publish(SLAM_POSE_CHANNEL, &currentPose_);
         lcm_.publish(SLAM_PARTICLES_CHANNEL, &particles);
 

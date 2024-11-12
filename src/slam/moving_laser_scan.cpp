@@ -33,7 +33,8 @@ MovingLaserScan::MovingLaserScan(const mbot_lcm_msgs::lidar_t& scan,
                 ray.origin.x = rayPose.x;
                 ray.origin.y = rayPose.y;
                 ray.range = scan.ranges[n];
-                ray.theta = scan.thetas[n];
+                ray.theta = wrap_to_pi(scan.thetas[n] + rayPose.theta);
+                std::cout<<"theta: "<<ray.theta<<std::endl;
                 adjustedRays_.push_back(ray);
             }
         }

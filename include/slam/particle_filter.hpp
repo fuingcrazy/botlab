@@ -30,7 +30,7 @@ static ParticleList importanceSample(const int num_particles,
   {
     float r = distribution(gen);
     int idx = 0;
-    float sum = particles[idx].weight;
+    float sum = particles[idx].weight;    //threshould
     while ((sum < r) && (idx < (num_particles-1))) {
       ++idx;
       sum += particles[idx].weight;
@@ -62,7 +62,7 @@ static ParticleList lowVarianceSample(const int num_particles,
         float u = r + i * 1. / num_particles;
         while ((u > s) && (idx < (num_particles-1))) {
             ++idx;
-            s += particles[idx].weight;
+            s += particles[idx].weight;      //update weight
         }
         samples.push_back(particles[idx]);
     }

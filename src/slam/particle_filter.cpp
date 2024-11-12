@@ -44,8 +44,8 @@ mbot_lcm_msgs::pose2D_t ParticleFilter::updateFilter(const mbot_lcm_msgs::pose2D
     bool hasRobotMoved = actionModel_.updateAction(odometry);
 
     auto prior = resamplePosteriorDistribution(map);
-    auto proposal = computeProposalDistribution(prior);
-    posterior_ = computeNormalizedPosterior(proposal, laser, map);
+    auto proposal = computeProposalDistribution(prior);  //apply action model
+    posterior_ = computeNormalizedPosterior(proposal, laser, map);    //apply sensor model
     /// TODO: Add reinvigoration step
     posteriorPose_ = estimatePosteriorPose(posterior_);
 

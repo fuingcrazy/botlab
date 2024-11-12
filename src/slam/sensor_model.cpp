@@ -18,6 +18,7 @@ SensorModel::SensorModel(void)
 void SensorModel::initialize_bfs_offsets()
 {
     /// TODO: Initialize the BFS offsets based on the search range 
+    bfs_offsets_ = {Point<int>(0,1),Point<int>(0,-1),Point<int>(1,0),Point<int>(-1,0)};
     
 }
 
@@ -46,8 +47,25 @@ double SensorModel::NormalPdf(const double& x)
 Point<int> SensorModel::gridBFS(const Point<int> end_point, const OccupancyGrid& map)
 {
     /// TODO: Use Breadth First Search to find the nearest occupied cell to the given end point. 
-    
-    return Point<int>(0,0); // Placeholder
+    std::queue<Point<int>>  to_vislist;
+    std::set<Point<int>> visited;
+    to_vislist.push(end_point);
+    visited.insert(end_point);
+    while(!to_vislist.empty()){
+        Point<int> pt = to_vislist.front();
+        if(map.logOdds(pt.x,pt.y) >= occupancy_threshold_)
+          return pt;
+        to_vislist.pop();
+        for(auto& it : bfs_offsets_){
+            Point<int> neighbor = pt + it;
+            if(map.isCellInGrid(neighbor.x,neighbor.y) && visited.find(neighbor) != visited.end() ){
+                to_vislist.push(neighbor);
+                visited.insert(neighbor);
+            }
+        }
+    }
+  std::cout<<"Failed to find the nearest occupied cell"<<std::endl;
+    return end_point; // Placeholder
 }
 
 Point<float> SensorModel::getRayEndPointOnMap(const adjusted_ray_t& ray, const OccupancyGrid& map)

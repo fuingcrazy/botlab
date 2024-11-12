@@ -14,6 +14,8 @@ struct particle_t;
 #include <list>
 #include <numeric>
 #include <random>
+#include <queue>
+#include <set>
 
 
 /**

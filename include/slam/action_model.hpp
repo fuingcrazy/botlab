@@ -4,6 +4,7 @@
 #include <mbot_lcm_msgs/pose2D_t.hpp>
 #include <mbot_lcm_msgs/particle_t.hpp>
 #include <random>
+#include <memory>
 
 /**
 * ActionModel implements the sampling-based odometry action model for estimating the motion of the robot between
@@ -66,11 +67,16 @@ private:
     double dx_;
     double dy_;
     double dtheta_;
+    double ds_ ;
+    double alpha;
     uint64_t utime_;
 
     bool initialized_;
 
     std::mt19937 numberGenerator_;
+    std::vector<mbot_lcm_msgs::particle_t> actionlist;   //for distribution of the next pose
+    std::unique_ptr<mbot_lcm_msgs::particle_t> newparticle;
+
 
     float xStd_;
     float yStd_;
